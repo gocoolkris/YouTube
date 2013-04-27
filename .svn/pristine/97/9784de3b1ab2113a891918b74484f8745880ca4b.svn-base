@@ -1,0 +1,38 @@
+package edu.upenn.cis455.youtube;
+
+import edu.upenn.cis455.components.GlobalData;
+import edu.upenn.cis455.components.HttpClient;
+
+public class YouTubeClient {
+
+	public YouTubeClient(String dbLocation){
+
+	}
+
+	public String searchVideos(String keyword){
+		String contents = null;
+		if(GlobalData.cacheService.containsEntry(keyword)){
+			contents = GlobalData.cacheService.getCacheContent(keyword);
+			System.err.println("Query for " + keyword + " resulted in a cache hit");
+		}
+		else{
+			System.err.println("Query for " + keyword + " resulted in a cache miss");
+			String url = this.constructUrlQueryString(keyword);
+			HttpClient client = new HttpClient(url);
+			contents = client.fetchContents();
+			GlobalData.cacheService.addToCache(keyword, contents);
+		}
+		//construct SOAP message and return it to the client.
+		return null;
+	}
+
+	private String constructUrlQueryString(String keyword){
+		if(keyword != null){
+			String server = "https://gdata.youtube.com/feeds/api/videos";
+			String qstring = "q=" + keyword;
+			String url = server + "?" + qstring;
+			return url;
+		}
+		return null;
+	}
+}

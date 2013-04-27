@@ -1,0 +1,27 @@
+package edu.upenn.cis455.youtube;
+
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Iterator;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import edu.upenn.cis455.components.Queue;
+
+public class YouTubeSearch extends HttpServlet {
+
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response){
+		try{
+			
+			PrintWriter writer = response.getWriter();
+			writer.print("<html><head><title>YouTube</title></head>");
+			
+			
+		}catch(Exception e){}
+	}
+	
+	
+}

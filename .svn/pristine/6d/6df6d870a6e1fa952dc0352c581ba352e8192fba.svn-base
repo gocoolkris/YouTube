@@ -1,0 +1,27 @@
+package edu.upenn.cis455.components;
+
+import java.net.InetSocketAddress;
+
+import rice.p2p.commonapi.Node;
+
+import edu.upenn.cis455.youtube.Daemon;
+import edu.upenn.cis455.youtube.NodeFactory;
+import edu.upenn.cis455.youtube.PastryApplication;
+
+public class GlobalData {
+
+	
+	//TIME TO LIVE for a cache entry in hours;
+	public static double TTL_IN_HOURS = 1;
+	public static double STORAGE_LIMIT_IN_MB = 100;
+	public static Queue userRequests;
+	public static int localPort;
+	public static InetSocketAddress bootstrapAddress;
+	public static int daemonport;
+	public static Daemon daemon;
+	public static NodeFactory localNodeFactory;
+	public static CacheService cacheService;
+	public static PastryApplication app;
+}
+
+

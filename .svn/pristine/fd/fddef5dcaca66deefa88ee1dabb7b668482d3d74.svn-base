@@ -1,0 +1,18 @@
+package test.edu.upenn.cis455;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import edu.upenn.cis455.components.HttpClient;
+
+public class HttpClientTest {
+
+	@Test
+	public void testFetchContents() {
+		String url = "https://gdata.youtube.com/feeds/api/videos?q=football";
+		HttpClient client = new HttpClient(url);
+		System.out.println(client.fetchContents());
+	}
+
+}

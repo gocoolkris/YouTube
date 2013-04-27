@@ -1,0 +1,36 @@
+package edu.upenn.cis455.components;
+
+import java.net.Socket;
+import java.util.Vector;
+
+public class Queue {
+
+	private Vector<Socket> servletRequests;
+	
+	public Queue(){
+		servletRequests = new Vector<Socket>();
+	}
+	
+	
+	public void enqueue(Socket s){
+		synchronized(this){
+			servletRequests.add(s);
+		}
+	}
+	
+	public Socket dequeue(){
+		synchronized(this){
+			if(servletRequests.isEmpty())
+				return null;
+			else return servletRequests.remove(0);
+		}
+	}
+	
+	
+	public boolean isEmpty(){
+		synchronized(this){
+			return servletRequests.isEmpty();
+		}
+	}
+	
+}

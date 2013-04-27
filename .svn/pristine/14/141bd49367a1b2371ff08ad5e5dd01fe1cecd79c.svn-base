@@ -1,0 +1,37 @@
+package edu.upenn.cis455.youtube;
+
+import rice.p2p.commonapi.Message;
+import rice.p2p.commonapi.NodeHandle;
+
+public class PastryMessage implements Message{
+
+	enum MessageType{
+		QUERY,
+		RESULT,
+		CACHE_HIT,
+		CACHE_MISS
+	}
+	
+	NodeHandle sender;
+	String content;
+	boolean wantResponse = true;
+	MessageType type;
+	
+	
+	public PastryMessage(NodeHandle sender, String content){
+		this.sender = sender;
+		this.content = content;
+	}
+	
+	public PastryMessage(NodeHandle sender, MessageType type, String content){
+		this.sender = sender;
+		this.type = type;
+		this.content = content;
+	}
+	
+	@Override
+	public int getPriority() {
+		return Message.LOW_PRIORITY;
+	}
+
+}

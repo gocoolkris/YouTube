@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app 
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+ <web-app>
+   <display-name>YouTube</display-name>
+   <context-param>
+   </context-param>
+    
+   <servlet>
+     <servlet-name>YouTubeSearch</servlet-name>
+     <servlet-class>edu.upenn.cis455.youtube.YouTubeSearch</servlet-class>
+     <init-param>
+     <param-name>cacheServer</param-name>
+     <param-value>172.16.97.129</param-value>
+     </init-param>
+     <init-param>
+      <param-name>cacheServerPort</param-name>
+     <param-value>8090</param-value>
+     </init-param>
+   </servlet>
+    
+   <servlet-mapping>
+     <servlet-name>YouTubeSearch</servlet-name>
+     <url-pattern>/youtube</url-pattern>
+   </servlet-mapping>  
+
+   <!-- add any additional servlets and servlet mappings here -->
+
+</web-app>

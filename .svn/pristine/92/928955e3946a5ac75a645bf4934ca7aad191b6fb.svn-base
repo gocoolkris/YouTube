@@ -1,0 +1,33 @@
+package edu.upenn.cis455.youtube;
+
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import edu.upenn.cis455.components.GlobalData;
+
+public class Daemon implements Runnable{
+
+	int portnumber;
+	ServerSocket serverSocket;
+	public Daemon(int portnumber){
+		try{
+			this.portnumber = portnumber;
+			serverSocket = new ServerSocket(portnumber);
+		}catch(Exception e){}
+	}
+
+	@Override
+	public void run() {
+		while(true){
+			try{
+				Socket s = serverSocket.accept();
+				GlobalData.userRequests.enqueue(s);
+				
+			}catch(Exception e){}
+		}
+	}
+
+
+
+
+}

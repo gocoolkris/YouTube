@@ -1,0 +1,60 @@
+Full name: Gokul Krishnan Ragunathan
+SEAS login: grag
+
+Which features did you implement? 
+  Entire Assignment(Extra credits  6.1, 6.2)
+
+Did you complete any extra-credit tasks? If so, which ones?
+  6.1 : Berkeley DB Store
+  6.2 : Cache Eviction and Expiration.
+
+Any special instructions for building and running your solution?
+
+
+  I could not build the project using the given build xml file.
+  I spent quite some time, trying to fix the build.xml, but i could not.
+  So, I am just zipping the file and submitting it. 
+  After unzipping the submit-hw3.zip,
+  
+  1.1
+  How to setup the NodeFactory:
+  
+  Copy the "target" directory and deploy into eniac.
+  cd target
+  java -cp "WEB-INF/lib/*:WEB-INF/classes/" edu.upenn.cis455.youtube.P2PCache <localport> <bootstrapip>
+  <bootport> <daemon port> <database directory>
+  
+  This should start the node factory
+  
+  1.2
+  How to Run Servlet(I used jetty, if testing in tomcat, please note that the WEB-INF folder
+  is in HW3/WEB-INF)
+  
+  Incase of Jetty,
+  
+  Copy HW3/WEB-INF(with web.xml parameters set appropriately) into Jetty folder in the appropriate
+  context.(for example, say my context path is "Youtube", then create a folder "Youtube" inside
+  
+  Log into a spec machine.
+  cd <jettyfolder>
+  java -jar start.jar     [this will start the server in default port 8080]
+  
+  Now open the browser and type 
+  spec<no>.seas.upenn.edu:8080/Youtube/youtube
+  
+  This should open the servlet.
+  
+  I am apologize for the detailed instruction. If you need a demo, i can come down for that.
+  
+Did you personally write _all_ the code you are submitting
+(other than code from the course web page)?
+  [x] Yes
+  [ ] No
+
+Did you copy any code from the Internet, or from classmates?
+  [ ] Yes
+  [x] No
+
+Did you collaborate with anyone on this assignment?
+  [ ] Yes
+  [x] No

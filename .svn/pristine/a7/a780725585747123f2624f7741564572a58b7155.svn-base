@@ -1,0 +1,75 @@
+package edu.upenn.cis455.youtube;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+
+import edu.upenn.cis455.components.CacheService;
+import edu.upenn.cis455.components.GlobalData;
+import edu.upenn.cis455.components.Queue;
+
+public class P2PCache {
+
+	/**
+	 * @param args[0]  - the port number on the local machine to which the 
+	 * Pastry node should bind;
+	 * args[1] - the IP address of the Pastry bootstrap node;
+	 * args[2] - the port number of the Pastry bootstrap node;
+	 * args[3] - the port number to which the daemon should bind; and
+	 * args[4] - the path to the berkeley DB database.
+	 */
+	
+	public static void main(String[] args){
+		
+		initialize(args);
+		
+	}
+
+	
+	
+	private static void initialize(String[] args){
+		try{
+		initializeServletQueue();
+		initializeDaemonThread(args[3]);
+		setUpDb(args[4]);
+		initializeNode(args[0], args[1], args[2]);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	
+	private static void setUpDb(String dbLocation) {
+		try{
+			if(dbLocation != null){
+				GlobalData.cacheService = new CacheService(dbLocation);
+			}
+		}catch(Exception e){}
+		
+	}
+
+	private static void initializeServletQueue() {
+		GlobalData.userRequests = new Queue();
+	}
+
+	private static void initializeDaemonThread(String daemonport) {
+		try{
+			
+			GlobalData.daemonport = Integer.parseInt(daemonport);
+			GlobalData.daemon = new Daemon(GlobalData.daemonport);		
+		}catch(Exception e){}		
+	}
+
+	private static void initializeNode(String localport, String bootIPAddress, String bootIPport) {
+		try{
+			GlobalData.localPort = Integer.parseInt(localport);
+		    int bootipport = Integer.parseInt(bootIPport);
+		   InetAddress ip = InetAddress.getByName(bootIPAddress);
+		   GlobalData.bootstrapAddress = new InetSocketAddress(ip,bootipport);
+		   GlobalData.localNodeFactory = new NodeFactory(GlobalData.localPort, GlobalData.bootstrapAddress);
+		   GlobalData.app = new PastryApplication(GlobalData.localNodeFactory);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+}

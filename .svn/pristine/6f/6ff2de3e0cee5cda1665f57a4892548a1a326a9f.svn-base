@@ -1,0 +1,53 @@
+package edu.upenn.cis455.youtube;
+
+import rice.p2p.commonapi.Application;
+import rice.p2p.commonapi.Endpoint;
+import rice.p2p.commonapi.Id;
+import rice.p2p.commonapi.Message;
+import rice.p2p.commonapi.Node;
+import rice.p2p.commonapi.NodeHandle;
+import rice.p2p.commonapi.RouteMessage;
+
+public class PastryApplication implements Application{
+
+	NodeFactory nodeFactory;
+	Node node;
+	Endpoint endpoint;
+	
+	
+	public PastryApplication(NodeFactory nfactory){
+		this.nodeFactory = nfactory;
+		this.node = nodeFactory.getNode();
+		this.endpoint = node.buildEndpoint(this, "PastryApplication");
+		endpoint.register();
+	}
+	
+	public void sendMessage(Id senderId, String msgToSend){
+		PastryMessage msg = new PastryMessage(node.getLocalNodeHandle(),msgToSend);
+		endpoint.route(senderId, msg, null);
+	}
+	
+	@Override
+	public void deliver(Id arg0, Message message) {
+		PastryMessage msg = (PastryMessage) message;
+		System.out.println("Received message " + msg.content + "from " + msg.sender);
+		if(msg.wantResponse){
+			PastryMessage reply = new PastryMessage(node.getLocalNodeHandle(),"Message Received");
+			reply.wantResponse = false;
+			endpoint.route(null,reply,msg.sender);
+		}
+		
+	}
+	@Override
+	public boolean forward(RouteMessage arg0) {
+		return true;
+	}
+	
+	
+	@Override
+	public void update(NodeHandle arg0, boolean arg1) {
+	}
+	
+	
+	
+}

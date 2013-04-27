@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/cis455/workspace/HW3/lib/gdata-src.java-1.46.0.zip"/>
+	<classpathentry kind="lib" path="/home/cis455/workspace/HW3/lib/FreePastry-2.1.jar"/>
+	<classpathentry kind="lib" path="/home/cis455/workspace/HW3/lib/javamail1_4_7.zip"/>
+	<classpathentry kind="lib" path="/home/cis455/workspace/HW3/lib/je-5.0.34.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/home/cis455/workspace/HW3/lib/servlet-api.jar"/>
+	<classpathentry kind="output" path="target/classes/"/>
+</classpath>

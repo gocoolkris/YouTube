@@ -1,0 +1,201 @@
+package edu.upenn.cis455.youtube;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Random;
+
+import rice.p2p.commonapi.Id;
+
+import edu.upenn.cis455.components.CacheService;
+import edu.upenn.cis455.components.GlobalData;
+import edu.upenn.cis455.components.ResultsQueue;
+import edu.upenn.cis455.components.SocketQueue;
+import edu.upenn.cis455.components.SOAPMessage;
+
+public class P2PCache {
+
+
+
+
+	/**
+	 * @param args[0]  - the port number on the local machine to which the 
+	 * Pastry node should bind;
+	 * args[1] - the IP address of the Pastry bootstrap node;
+	 * args[2] - the port number of the Pastry bootstrap node;
+	 * args[3] - the port number to which the daemon should bind; and
+	 * args[4] - the path to the berkeley DB database.
+	 */
+
+	public static void main(String[] args){
+		try{
+			initialize(args);
+			System.out.println("pastry application entering infinite while loop");
+			while(true){
+				//Thread.sleep(2000);
+				if(!GlobalData.userRequests.isEmpty()){
+					Socket cl_request = GlobalData.userRequests.dequeue();
+					System.out.println("Servlet Request Received");
+					String  input = readInputRequest(cl_request);
+					System.out.println("Servlet Request is:" + input);
+					SOAPMessage inputmsg = new SOAPMessage();
+					String keyword = inputmsg.getKeyword(input);
+					System.out.println("The keyword is " + keyword);
+					Id destId = GlobalData.app.nodeFactory.getIdFromString(keyword);
+					System.out.println(destId.toString());
+					long time = new Date().getTime();
+					GlobalData.servletSockets.put(time, cl_request);
+					GlobalData.app.sendMessage(destId, input, MessageType.QUERY, time);
+				}
+				if(!GlobalData.resultsqueue.isEmpty()){
+					PastryMessage reply = GlobalData.resultsqueue.dequeue();
+					Socket toReply = GlobalData.servletSockets.get(reply.timeCreation);
+					if(toReply!= null){
+						PrintWriter writer = new PrintWriter(toReply.getOutputStream());
+						writer.print(reply.content);
+						writer.flush();
+						writer.close();
+						GlobalData.servletSockets.remove(reply.timeCreation);
+					}
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Helper method that reads the input request from the servlet socket
+	 * that has just been read.
+	 * @param cl_request - the input socket.
+	 * @return returns the input request.
+	 */
+
+	private static String readInputRequest(Socket cl_request) {
+		try{
+			BufferedReader reader = new BufferedReader(new InputStreamReader(cl_request.getInputStream()));
+			StringBuffer inputRequest = new StringBuffer();
+			String line = null;
+			line = reader.readLine();
+//			while((line = reader.readLine())!= null){
+//				inputRequest.append(line + "\n");
+//			}
+			inputRequest.append(line);
+			return inputRequest.toString();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * the wrapper method that initializes different components and
+	 * initializes them at startup namely,
+	 * Queue - used for daemon thread to send messages to Node Application.
+	 * DaemonThread - that listens for Servlet Requests.
+	 * YoutubeClient - instance of YoutubeClient class which inturn
+	 * instantiates and setups up the database.
+	 * ApplicationNode - the pastryring is created and the application is
+	 * all setup on the node to send and receive messages.
+	 * @param args
+	 */
+
+	private static void initialize(String[] args){
+		try{
+			initializeQueues();
+			initializeHashMap();
+			initializeThreads(args[3]);
+			youtubeClientSetup(args[4]);
+			initializeNode(args[0], args[1], args[2]);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+/**
+ * initializes the hashmap that is used to store the incoming requests
+ * and the time at which it was processed.
+ */
+private static void initializeHashMap() {
+	try{
+		GlobalData.servletSockets = new HashMap<Long,Socket>();
+	}catch(Exception e){
+		e.printStackTrace();
+	}
+		
+	}
+
+/**
+ * helper method that setups the YouTubeClient instance.
+ * @param dbLocation - the location of the Berkeley Database.
+ */
+	private static void youtubeClientSetup(String dbLocation) {
+		try{
+			if(dbLocation != null){
+				GlobalData.client = new YouTubeClient(dbLocation);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * initializes the Daemon Queue
+	 */
+	private static void initializeQueues() {
+		GlobalData.userRequests = new SocketQueue();
+		GlobalData.resultsqueue = new ResultsQueue();
+	}
+
+	/**
+	 * helper method that initializes the daemon thread.
+	 * @param daemonport - the localport at which the daemon thread
+	 * would be listening.
+	 */
+	private static void initializeThreads(String daemonport) {
+		try{
+
+			GlobalData.daemonport = Integer.parseInt(daemonport);
+			GlobalData.daemon = new Thread(new Daemon(GlobalData.daemonport));
+			GlobalData.daemon.setDaemon(true);
+			GlobalData.daemon.start();
+			System.out.println("Daemon Thread running");
+			GlobalData.pingpong = new Thread(new PingPong());
+			GlobalData.pingpong.setDaemon(true);
+			GlobalData.pingpong.start();
+			System.out.println("PingPong Thread running");
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
+	}
+	
+	/**
+	 * helper method that setup the PastryNode and the application
+	 * as the end point.
+	 * @param localport - the localport the pastry node will be using to communicate
+	 * with member nodes.
+	 * @param bootIPAddress - ip of the bootstrap node.
+	 * @param bootIPport - portnumber of the bootstrap node.
+	 */
+	private static void initializeNode(String localport, String bootIPAddress, String bootIPport) {
+		try{
+			GlobalData.localPort = Integer.parseInt(localport);
+			int bootipport = Integer.parseInt(bootIPport);
+			InetAddress ip = InetAddress.getByName(bootIPAddress);
+			GlobalData.bootstrapAddress = new InetSocketAddress(ip,bootipport);
+			GlobalData.localNodeFactory = new NodeFactory(GlobalData.localPort, GlobalData.bootstrapAddress);
+			GlobalData.app = new PastryApplication(GlobalData.localNodeFactory);
+			System.out.println("Node factory setup. Node initialized");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+}

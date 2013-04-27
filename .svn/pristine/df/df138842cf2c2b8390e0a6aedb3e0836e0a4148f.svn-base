@@ -1,0 +1,50 @@
+package edu.upenn.cis455.components;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.HashMap;
+
+import rice.p2p.commonapi.Node;
+
+import edu.upenn.cis455.youtube.Daemon;
+import edu.upenn.cis455.youtube.NodeFactory;
+import edu.upenn.cis455.youtube.PastryApplication;
+import edu.upenn.cis455.youtube.YouTubeClient;
+
+public class GlobalData {
+
+	
+	//TIME TO LIVE for a cache entry in hours;
+	public static double TTL_IN_HOURS = 0;
+	//the maximum storage size of the database.
+	public static double STORAGE_LIMIT_IN_MB = 0;
+	//the time interval between the ping service.
+	public static int sleepTime = 3000;
+	//the hash map that stores the list of the incoming
+	//requests along with the sockets.
+	public static HashMap<Long,Socket> servletSockets;
+	//the queue that is used for communication between the daemon 
+	//thread and P2PCache.
+	public static SocketQueue userRequests;
+	//the result queue for sending the reply back to the servlet.
+	public static ResultsQueue resultsqueue;
+	//the localport to which the pastry node should listen to.
+	public static int localPort;
+	// the bootstrapAddress to which the node should connect to.
+	public static InetSocketAddress bootstrapAddress;
+	// the daemon that server socket should listen ton.
+	public static int daemonport;
+	//instance of the daemon thread.
+	public static Thread daemon;
+	//instance of ping pong service.
+	public static Thread pingpong;
+	//the static instance of the nodefactory of the pastry application.
+	public static NodeFactory localNodeFactory;
+	// the youtube client object which uses the API.
+	public static YouTubeClient client;
+	// the application instance.
+	public static PastryApplication app;
+	
+}
+
+
